@@ -1,1 +1,18 @@
-
+{
+  "scripts": [
+    {
+      "name": "Surf For Lucky Blocks",
+      "description": "Auto surf system for lucky block interactions",
+      "gameName": "Surf For Lucky Blocks",
+      "gameId": 98916904742148,
+      "script": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Nocturra/Noctura/refs/heads/main/scripts/SurfForLuckyBlocks/script.lua'))()"
+    },
+    {
+      "name": "Sell Lemons",
+      "description": "Automatically sells lemons in-game",
+      "gameName": "Unknown Game",
+      "gameId": 79268393072444,
+      "script": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Nocturra/Noctura/refs/heads/main/scripts/SellLemons/script.lua'))()"
+    }
+  ]
+}
