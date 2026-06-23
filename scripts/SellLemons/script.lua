@@ -2,19 +2,22 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ghost
 
 local Gui = Library:AddGui({
 	Title = {"Noctura", "Sell Lemons"},
-	ThemeColor = Color3.fromRGB(98, 3, 252),
+	ThemeColor = Color3.fromRGB(128, 0, 128),
 	ToggleKey = Enum.KeyCode.RightShift,
 })
 
 local AutofarmTab = Gui:AddTab("Autofarm")
 local SettingsTab = Gui:AddTab("Settings")
+local MiscTab = Gui:AddTab("Misc")
 
 local AutofarmCategory = AutofarmTab:AddCategory("Farming Options")
 local SettingsCategory = SettingsTab:AddCategory("System Settings")
+local MiscCategory = MiscTab:AddCategory("Misc Options")
 
 local plr = game:GetService("Players").LocalPlayer
 
 getgenv().farming = false
+getgenv().autoPhoneOffer = true
 getgenv().farmsettings = {
     purchase = true,
     upgrade = true,
@@ -79,7 +82,7 @@ end
 local PurchasesFold = tycoon.Purchases
 
 tycoon.Remotes.PhoneOffer.OnClientEvent:Connect(function()
-    if not getgenv().farming then return end
+    if not getgenv().autoPhoneOffer or not getgenv().farming then return end
     local Event = tycoon.Remotes.PhoneOffer
     Event:FireServer(
         "Accept"
@@ -203,6 +206,10 @@ AutofarmCategory:AddToggle("Auto Pickup Fruit", true, function(v)
     getgenv().farmsettings.fruit = v
 end)
 
+AutofarmCategory:AddToggle("Auto Phone Offer Accept", true, function(v)
+    getgenv().autoPhoneOffer = v
+end)
+
 getgenv().antiafk = true
 
 plr.Idled:Connect(function()
@@ -229,3 +236,31 @@ SettingsCategory:AddButton("Close GUI", function()
         end
     end
 end)
+
+-- Misc Tab
+local selectedLabel = "LemonStand"
+
+MiscCategory:AddDropdown("Select Label", {"LemonStand", "LemonDash"}, function(option)
+    selectedLabel = option
+end)
+
+MiscCategory:AddLabel("Select Value:")
+
+local labelOptions = {
+    "SCREW",
+    "Noctura is the Best",
+    "Noctura Lemon Lemon",
+    "🎅🏿🎅🏿",
+    "Eat Fat Lemons",
+    "Drink Bromine"
+}
+
+for _, labelValue in ipairs(labelOptions) do
+    MiscCategory:AddButton(labelValue, function()
+        local Event = tycoon.Remotes.ChangeLabel
+        Event:InvokeServer(
+            selectedLabel,
+            labelValue
+        )
+    end)
+end
