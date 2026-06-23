@@ -15,6 +15,13 @@
       "script": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Nocturra/Noctura/refs/heads/main/scripts/MoneyIncremental/script.lua'))()"
     },
     {
+      "name": "SCREAM for Brainrot!",
+      "description": "Make your lungs collapse for Pixels!",
+      "gameName": "SCREAM for Brainrot!",
+      "gameId": 94780005879799,
+      "script": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Nocturra/Noctura/refs/heads/main/scripts/ScreamForBrainrots/script.lua'))()"
+    },
+    {
       "name": "Sell Lemons",
       "description": "Automatically sells lemons in-game",
       "gameName": "Unknown Game",
