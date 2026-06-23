@@ -8,6 +8,13 @@
       "script": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Nocturra/Noctura/refs/heads/main/scripts/SurfForLuckyBlocks/script.lua'))()"
     },
     {
+      "name": "Money Clicker Incremental",
+      "description": "Click for money. Or do it automatically.",
+      "gameName": "Money Clicker Incremental",
+      "gameId": 18408132742,
+      "script": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Nocturra/Noctura/refs/heads/main/scripts/MoneyIncremental/script.lua'))()"
+    },
+    {
       "name": "Sell Lemons",
       "description": "Automatically sells lemons in-game",
       "gameName": "Unknown Game",
