@@ -2,7 +2,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ghost
 
 local Gui = Library:AddGui({
 	Title = {"Noctura", "Sell Lemons"},
-	ThemeColor = Color3.fromRGB(128, 0, 128),
+	ThemeColor = Color3.fromRGB(98, 3, 252),
 	ToggleKey = Enum.KeyCode.RightShift,
 })
 
