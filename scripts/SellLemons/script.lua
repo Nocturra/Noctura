@@ -2,7 +2,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ghost
 
 local Gui = Library:AddGui({
 	Title = {"Noctura", "Sell Lemons"},
-	ThemeColor = Color3.fromRGB(139, 69, 19),
+	ThemeColor = Color3.fromRGB(128, 0, 128),
 	ToggleKey = Enum.KeyCode.RightShift,
 })
 
@@ -93,7 +93,7 @@ AutofarmCategory:AddToggle("Autofarm", false, function(bool)
     task.spawn(function()
         while getgenv().farming do
             if not getgenv().farmsettings.collect then wait(1) continue end
-
+            -- Step 1. Collect money
             for i, v in pairs(stands:GetChildren()) do
                 local Event = tycoon.Remotes.WakeIncomeStream
                 Event:InvokeServer(
@@ -105,7 +105,7 @@ AutofarmCategory:AddToggle("Autofarm", false, function(bool)
     end)
 
     while getgenv().farming do
-
+        -- Step 2. Buy cool stuff
         pcall(function()
             if not getgenv().farmsettings.purchase then return end
             for _, fold in pairs(PurchasesFold:GetChildren()) do
@@ -141,6 +141,7 @@ AutofarmCategory:AddToggle("Autofarm", false, function(bool)
             end
         end)
 
+        -- Step 3. Upgrade everything
         pcall(function()
             if not getgenv().farmsettings.upgrade then return end
             for _, fold in pairs(PurchasesFold:GetChildren()) do
@@ -152,6 +153,8 @@ AutofarmCategory:AddToggle("Autofarm", false, function(bool)
                 end
             end
         end)
+
+        -- Step 4. Cash drops
         pcall(function()
             if not getgenv().farmsettings.cashdrop then return end
             for i, v in pairs(workspace.CashDrops:GetChildren()) do
@@ -161,6 +164,7 @@ AutofarmCategory:AddToggle("Autofarm", false, function(bool)
             end
         end)
 
+        -- Step 5. Collect fruit
         pcall(function()
             if not getgenv().farmsettings.fruit then return end
             for i, v in pairs(tycoon.Constant.Trees:GetChildren()) do
@@ -206,6 +210,8 @@ plr.Idled:Connect(function()
     game:GetService("VirtualUser"):Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
     game:GetService("VirtualUser"):Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
 end)
+
+-- Settings Tab
 SettingsCategory:AddToggle("Disable 3D Rendering", false, function(v)
     game:GetService("RunService"):Set3dRenderingEnabled(not v)
 end)
@@ -215,5 +221,11 @@ SettingsCategory:AddToggle("Anti AFK", true, function(v)
 end)
 
 SettingsCategory:AddButton("Close GUI", function()
-    Gui:Destroy()
+    local coreGui = game:GetService("CoreGui")
+    for _, child in pairs(coreGui:GetChildren()) do
+        if child.Name == "Noctura Sell Lemons" then
+            child:Destroy()
+            break
+        end
+    end
 end)
