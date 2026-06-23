@@ -123,9 +123,11 @@ else
     }
     
     Tab:Button{
-        Name = "Not Supported",
-        Description = "This game is not supported!",
-        Callback = function() end
+        Name = "Load Universal",
+        Description = "This game isn't supported :( Use Universal!",
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Nocturra/Noctura/refs/heads/main/scripts/uni/script.lua"))()
+        end
     }
     
     local SettingsTab = GUI:Tab{
