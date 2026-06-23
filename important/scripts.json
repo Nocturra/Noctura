@@ -15,6 +15,13 @@
       "script": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Nocturra/Noctura/refs/heads/main/scripts/MoneyIncremental/script.lua'))()"
     },
     {
+      "name": "Stud Incremental",
+      "description": "GOOBY THIS GOOBY THAT GOOBY WIFI GOOBY RAM GOOBY STEAK GOOBY HAM GOOBY COMING FROM JAPAN NOW ALL THE GOOBYS ARE GOING HAM",
+      "gameName": "Stud Incremental",
+      "gameId": 127675063398240,
+      "script": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Nocturra/Noctura/refs/heads/main/scripts/StudIncremental/script.lua'))()"
+    },
+    {
       "name": "SCREAM for Brainrot!",
       "description": "Make your lungs collapse for Pixels!",
       "gameName": "SCREAM for Brainrot!",
