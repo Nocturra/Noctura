@@ -15,6 +15,13 @@
       "script": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Nocturra/Noctura/refs/heads/main/scripts/MoneyIncremental/script.lua'))()"
     },
     {
+      "name": "MM2",
+      "description": "Murderer, Sheriff. Innocent? Who do i trust? It's a Mystery.. Haha!",
+      "gameName": "Murder Mystery 2",
+      "gameId": 142823291,
+      "script": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Nocturra/Noctura/refs/heads/main/scripts/MM2/script.lua'))()"
+    },
+    {
       "name": "Stud Incremental",
       "description": "GOOBY THIS GOOBY THAT GOOBY WIFI GOOBY RAM GOOBY STEAK GOOBY HAM GOOBY COMING FROM JAPAN NOW ALL THE GOOBYS ARE GOING HAM",
       "gameName": "Stud Incremental",
