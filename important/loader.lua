@@ -67,7 +67,7 @@ end
 
 if matchingScript then
     GUI = Mercury:Create{
-        Name = "Noctura",
+        Name = "Noctura | Happy 5 Games Supported! 💕",
         Size = UDim2.fromOffset(500, 300),
         Theme = Mercury.Themes.Dark,
         Link = "https://github.com/Nocturra/Noctura"
