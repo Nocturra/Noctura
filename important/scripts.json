@@ -31,7 +31,7 @@
     {
       "name": "Sell Lemons",
       "description": "Automatically sells lemons in-game",
-      "gameName": "Unknown Game",
+      "gameName": "Sell Lemons",
       "gameId": 79268393072444,
       "script": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Nocturra/Noctura/refs/heads/main/scripts/SellLemons/script.lua'))()"
     }
