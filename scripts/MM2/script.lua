@@ -11,6 +11,7 @@ local HttpService = game:GetService("HttpService")
 local UserInputService = game:GetService("UserInputService")
 local VirtualUser = game:GetService("VirtualUser")
 local TeleportService = game:GetService("TeleportService")
+local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
@@ -122,15 +123,43 @@ task.spawn(function()
     end
 end)
 task.spawn(function()
-    while task.wait(0.5) do
+    while task.wait(0.1) do
         if toggles.AutoCoin and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local hrp = LocalPlayer.Character.HumanoidRootPart
             local coinFolder = workspace:FindFirstChild("Workplace") and workspace.Workplace:FindFirstChild("CoinContainer")
+            
             if coinFolder then
                 for _, obj in pairs(coinFolder:GetChildren()) do
+                    -- Bail out immediately if you toggle it off mid-farm
+                    if not toggles.AutoCoin then break end 
+                    
                     if obj.Name == "Coin_Server" or obj.Name == "Coin" then
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = obj.CFrame
-                        task.wait(0.25)
+                        -- Position ~3.5 studs under the coin so you're chilling under the floor
+                        local targetCFrame = obj.CFrame * CFrame.new(0, -3.5, 0)
+                        
+                        -- Math to keep the speed consistent no matter the distance
+                        local distance = (hrp.Position - targetCFrame.Position).Magnitude
+                        local speed = 45 -- Studs per second. Tweak this if it's too fast or slow
+                        local timeToMove = distance / speed
+                        
+                        -- Smooth slide using TweenService
+                        local tweenInfo = TweenInfo.new(timeToMove, Enum.EasingStyle.Linear)
+                        local tween = TweenService:Create(hrp, tweenInfo, {CFrame = targetCFrame})
+                        
+                        -- Anchor so gravity doesn't drag you to the void
+                        hrp.Anchored = true 
+                        
+                        tween:Play()
+                        tween.Completed:Wait() -- Wait until the tween actually reaches the coin
+                        
+                        -- Tiny pause so the server registers you touching the hitbox
+                        task.wait(0.15) 
                     end
+                end
+                
+                -- Unanchor once the loop finishes or stops finding coins
+                if hrp then 
+                    hrp.Anchored = false 
                 end
             end
         end
