@@ -1,18 +1,21 @@
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/GhostDuckyy/UI-Libraries/refs/heads/main/IreXion%20Ui%20Lib/source.lua"))()
+getgenv().RAYFIELD_ASSET_ID = 120960636838063
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local Gui = Library:AddGui({
-	Title = {"Noctura", "Sell Lemons"},
-	ThemeColor = Color3.fromRGB(128, 0, 128),
-	ToggleKey = Enum.KeyCode.RightShift,
+local Window = Rayfield:CreateWindow({
+   Name = "Noctura - Sell Lemons",
+   LoadingTitle = "Noctura",
+   LoadingSubtitle = "Sell Lemons",
+   ConfigurationSaving = {
+      Enabled = false,
+      FolderName = "Noctura",
+      FileName = "SellLemonsConfig"
+   },
+   Theme = "AmberGlow"
 })
 
-local AutofarmTab = Gui:AddTab("Autofarm")
-local SettingsTab = Gui:AddTab("Settings")
-local MiscTab = Gui:AddTab("Misc")
-
-local AutofarmCategory = AutofarmTab:AddCategory("Farming Options")
-local SettingsCategory = SettingsTab:AddCategory("System Settings")
-local MiscCategory = MiscTab:AddCategory("Misc Options")
+local AutofarmTab = Window:CreateTab("Autofarm")
+local SettingsTab = Window:CreateTab("Settings")
+local MiscTab = Window:CreateTab("Misc")
 
 local plr = game:GetService("Players").LocalPlayer
 
@@ -89,178 +92,209 @@ tycoon.Remotes.PhoneOffer.OnClientEvent:Connect(function()
     )
 end)
 
-AutofarmCategory:AddToggle("Autofarm", false, function(bool)
-    local stands = tycoon.Values.Income.Streams
-    getgenv().farming = bool
-    if not getgenv().farming then return end
-    task.spawn(function()
-        while getgenv().farming do
+AutofarmTab:CreateSection("Farming Options")
+AutofarmTab:CreateToggle({
+   Name = "Autofarm",
+   CurrentValue = false,
+   Flag = "Autofarm",
+   Callback = function(bool)
+      local stands = tycoon.Values.Income.Streams
+      getgenv().farming = bool
+      if not getgenv().farming then return end
+      task.spawn(function()
+         while getgenv().farming do
             if not getgenv().farmsettings.collect then wait(1) continue end
-            -- Step 1. Collect money
             for i, v in pairs(stands:GetChildren()) do
-                local Event = tycoon.Remotes.WakeIncomeStream
-                Event:InvokeServer(
-                    v.Name
-                )
+               local Event = tycoon.Remotes.WakeIncomeStream
+               Event:InvokeServer(v.Name)
             end
             task.wait()
-        end
-    end)
+         end
+      end)
 
-    while getgenv().farming do
-        -- Step 2. Buy cool stuff
-        pcall(function()
+      while getgenv().farming do
+         pcall(function()
             if not getgenv().farmsettings.purchase then return end
             for _, fold in pairs(PurchasesFold:GetChildren()) do
-                if fold:FindFirstChild("Buttons") then
-                    for i, nFold in pairs(fold.Buttons:GetChildren()) do
-                        if nFold:IsA("Folder") then
-                            for _,btn in pairs(nFold:GetChildren()) do
-                                if btn:GetAttribute("Shown") and btn:GetAttribute("Enabled") and not btn:GetAttribute("Purchased") then
-                                    local price = decodeValue(btn.Button.Gui.Price.Text)
-                                    local curbalance = decodeValue(plr.leaderstats.Cash.Value)
-
-                                    if price <= curbalance then
-                                        firetouchinterest(plr.Character.Head, btn.Button, true)
-                                        task.wait()
-                                        firetouchinterest(plr.Character.Head, btn.Button, false)
-                                    end
-                                end
-                            end
-                        elseif nFold:IsA("Model") then
-                            if nFold:GetAttribute("Shown") and nFold:GetAttribute("Enabled") and not nFold:GetAttribute("Purchased") then
-                                local price = decodeValue(nFold.Button.Gui.Price.Text)
-                                local curbalance = decodeValue(plr.leaderstats.Cash.Value)
-
-                                if price <= curbalance then
-                                    firetouchinterest(plr.Character.Head, nFold.Button, true)
-                                    task.wait()
-                                    firetouchinterest(plr.Character.Head, nFold.Button, false)
-                                end
-                            end
+               if fold:FindFirstChild("Buttons") then
+                  for i, nFold in pairs(fold.Buttons:GetChildren()) do
+                     if nFold:IsA("Folder") then
+                        for _,btn in pairs(nFold:GetChildren()) do
+                           if btn:GetAttribute("Shown") and btn:GetAttribute("Enabled") and not btn:GetAttribute("Purchased") then
+                              local price = decodeValue(btn.Button.Gui.Price.Text)
+                              local curbalance = decodeValue(plr.leaderstats.Cash.Value)
+                              if price <= curbalance then
+                                 firetouchinterest(plr.Character.Head, btn.Button, true)
+                                 task.wait()
+                                 firetouchinterest(plr.Character.Head, btn.Button, false)
+                              end
+                           end
                         end
-                    end
-                end
+                     elseif nFold:IsA("Model") then
+                        if nFold:GetAttribute("Shown") and nFold:GetAttribute("Enabled") and not nFold:GetAttribute("Purchased") then
+                           local price = decodeValue(nFold.Button.Gui.Price.Text)
+                           local curbalance = decodeValue(plr.leaderstats.Cash.Value)
+                           if price <= curbalance then
+                              firetouchinterest(plr.Character.Head, nFold.Button, true)
+                              task.wait()
+                              firetouchinterest(plr.Character.Head, nFold.Button, false)
+                           end
+                        end
+                     end
+                  end
+               end
             end
-        end)
+         end)
 
-        -- Step 3. Upgrade everything
-        pcall(function()
+         pcall(function()
             if not getgenv().farmsettings.upgrade then return end
             for _, fold in pairs(PurchasesFold:GetChildren()) do
-                if fold:FindFirstChild(fold.Name) then
-                    if not fold:FindFirstChild(fold.Name):GetAttribute("Enabled") then
-                        continue
-                    end
-                    fold:FindFirstChild(fold.Name):FindFirstChild(fold.Name).Upgrade:InvokeServer(1)
-                end
+               if fold:FindFirstChild(fold.Name) then
+                  if not fold:FindFirstChild(fold.Name):GetAttribute("Enabled") then
+                     continue
+                  end
+                  fold:FindFirstChild(fold.Name):FindFirstChild(fold.Name).Upgrade:InvokeServer(1)
+               end
             end
-        end)
+         end)
 
-        -- Step 4. Cash drops
-        pcall(function()
+         pcall(function()
             if not getgenv().farmsettings.cashdrop then return end
             for i, v in pairs(workspace.CashDrops:GetChildren()) do
-                firetouchinterest(plr.Character.Head, v, true)
-                task.wait()
-                firetouchinterest(plr.Character.Head, v, false)
+               firetouchinterest(plr.Character.Head, v, true)
+               task.wait()
+               firetouchinterest(plr.Character.Head, v, false)
             end
-        end)
+         end)
 
-        -- Step 5. Collect fruit
-        pcall(function()
+         pcall(function()
             if not getgenv().farmsettings.fruit then return end
             for i, v in pairs(tycoon.Constant.Trees:GetChildren()) do
-                for _, lemon in pairs(v:GetChildren()) do
-                    if not lemon.Name == "Fruit" then continue end
-                    if not lemon:FindFirstChild("ClickPart") then continue end
-                    fireclickdetector(lemon.ClickPart.ClickDetector)
-                    task.wait()
-                end
+               for _, lemon in pairs(v:GetChildren()) do
+                  if not lemon.Name == "Fruit" then continue end
+                  if not lemon:FindFirstChild("ClickPart") then continue end
+                  fireclickdetector(lemon.ClickPart.ClickDetector)
+                  task.wait()
+               end
             end
-        end)
+         end)
 
-        task.wait(1)
-    end
-end)
+         task.wait(1)
+      end
+   end,
+})
 
-AutofarmCategory:AddLabel("Sub-Options:")
-
-AutofarmCategory:AddToggle("Auto Purchase", true, function(v)
-    getgenv().farmsettings.purchase = v
-end)
-
-AutofarmCategory:AddToggle("Auto Collect", true, function(v)
-    getgenv().farmsettings.collect = v
-end)
-
-AutofarmCategory:AddToggle("Auto Upgrade", true, function(v)
-    getgenv().farmsettings.upgrade = v
-end)
-
-AutofarmCategory:AddToggle("Auto Cash Drop", true, function(v)
-    getgenv().farmsettings.cashdrop = v
-end)
-
-AutofarmCategory:AddToggle("Auto Pickup Fruit", true, function(v)
-    getgenv().farmsettings.fruit = v
-end)
-
-AutofarmCategory:AddToggle("Auto Phone Offer Accept", true, function(v)
-    getgenv().autoPhoneOffer = v
-end)
+AutofarmTab:CreateSection("Sub-Options")
+AutofarmTab:CreateToggle({
+   Name = "Auto Purchase",
+   CurrentValue = true,
+   Flag = "AutoPurchase",
+   Callback = function(v)
+      getgenv().farmsettings.purchase = v
+   end,
+})
+AutofarmTab:CreateToggle({
+   Name = "Auto Collect",
+   CurrentValue = true,
+   Flag = "AutoCollect",
+   Callback = function(v)
+      getgenv().farmsettings.collect = v
+   end,
+})
+AutofarmTab:CreateToggle({
+   Name = "Auto Upgrade",
+   CurrentValue = true,
+   Flag = "AutoUpgrade",
+   Callback = function(v)
+      getgenv().farmsettings.upgrade = v
+   end,
+})
+AutofarmTab:CreateToggle({
+   Name = "Auto Cash Drop",
+   CurrentValue = true,
+   Flag = "AutoCashDrop",
+   Callback = function(v)
+      getgenv().farmsettings.cashdrop = v
+   end,
+})
+AutofarmTab:CreateToggle({
+   Name = "Auto Pickup Fruit",
+   CurrentValue = true,
+   Flag = "AutoPickupFruit",
+   Callback = function(v)
+      getgenv().farmsettings.fruit = v
+   end,
+})
+AutofarmTab:CreateToggle({
+   Name = "Auto Phone Offer Accept",
+   CurrentValue = true,
+   Flag = "AutoPhoneOffer",
+   Callback = function(v)
+      getgenv().autoPhoneOffer = v
+   end,
+})
 
 getgenv().antiafk = true
 
 plr.Idled:Connect(function()
-    if not getgenv().antiafk then return end
-    game:GetService("VirtualUser"):Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-    game:GetService("VirtualUser"):Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+   if not getgenv().antiafk then return end
+   game:GetService("VirtualUser"):Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+   game:GetService("VirtualUser"):Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
 end)
 
--- Settings Tab
-SettingsCategory:AddToggle("Disable 3D Rendering", false, function(v)
-    game:GetService("RunService"):Set3dRenderingEnabled(not v)
-end)
+SettingsTab:CreateSection("System Settings")
+SettingsTab:CreateToggle({
+   Name = "Disable 3D Rendering",
+   CurrentValue = false,
+   Flag = "Disable3DRendering",
+   Callback = function(v)
+      game:GetService("RunService"):Set3dRenderingEnabled(not v)
+   end,
+})
+SettingsTab:CreateToggle({
+   Name = "Anti AFK",
+   CurrentValue = true,
+   Flag = "AntiAFK",
+   Callback = function(v)
+      getgenv().antiafk = v
+   end,
+})
+SettingsTab:CreateButton({
+   Name = "Close GUI",
+   Callback = function()
+      Rayfield:Destroy()
+   end,
+})
 
-SettingsCategory:AddToggle("Anti AFK", true, function(v)
-    getgenv().antiafk = v
-end)
-
-SettingsCategory:AddButton("Close GUI", function()
-    local coreGui = game:GetService("CoreGui")
-    for _, child in pairs(coreGui:GetChildren()) do
-        if child.Name == "Noctura Sell Lemons" then
-            child:Destroy()
-            break
-        end
-    end
-end)
-
--- Misc Tab
+MiscTab:CreateSection("Misc Options")
 local selectedLabel = "LemonStand"
+MiscTab:CreateDropdown({
+   Name = "Select Label",
+   Options = {"LemonStand", "LemonDash"},
+   CurrentOption = {"LemonStand"},
+   MultipleOptions = false,
+   Flag = "SelectedLabel",
+   Callback = function(Options)
+      selectedLabel = Options[1]
+   end,
+})
 
-MiscCategory:AddDropdown("Select Label", {"LemonStand", "LemonDash"}, function(option)
-    selectedLabel = option
-end)
-
-MiscCategory:AddLabel("Select Value:")
-
+MiscTab:CreateSection("Select Value")
 local labelOptions = {
-    "SCREW",
-    "Noctura is the Best",
-    "Noctura Lemon Lemon",
-    "🎅🏿🎅🏿",
-    "Eat Fat Lemons",
-    "Drink Bromine"
+   "SCREW",
+   "Noctura is the Best",
+   "Noctura Lemon Lemon",
+   "🎅🏿🎅🏿",
+   "Eat Fat Lemons",
+   "Drink Bromine"
 }
 
 for _, labelValue in ipairs(labelOptions) do
-    MiscCategory:AddButton(labelValue, function()
-        local Event = tycoon.Remotes.ChangeLabel
-        Event:InvokeServer(
-            selectedLabel,
-            labelValue
-        )
-    end)
+   MiscTab:CreateButton({
+      Name = labelValue,
+      Callback = function()
+         local Event = tycoon.Remotes.ChangeLabel
+         Event:InvokeServer(selectedLabel, labelValue)
+      end,
+   })
 end
