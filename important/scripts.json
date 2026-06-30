@@ -15,6 +15,13 @@
       "script": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Nocturra/Noctura/refs/heads/main/scripts/MoneyIncremental/script.lua'))()"
     },
     {
+      "name": "Untitled Upgrade Tree",
+      "description": "yeah what the fuck",
+      "gameName": "Untitled Upgrade Tree",
+      "gameId": 113814738390716,
+      "script": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Nocturra/Noctura/refs/heads/main/scripts/UUT/script.lua'))()"
+    },
+    {
       "name": "MM2",
       "description": "Murderer, Sheriff. Innocent? Who do i trust? It's a Mystery.. Haha!",
       "gameName": "Murder Mystery 2",
