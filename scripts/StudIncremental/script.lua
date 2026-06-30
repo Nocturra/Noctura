@@ -12,7 +12,7 @@ local Window = Rayfield:CreateWindow({
       FolderName = "Noctura",
       FileName = "StudIncrementalConfig"
    },
-   Theme = "AmberGlow"
+   Theme = "Amethyst"
 })
 
 local Toggles = {
