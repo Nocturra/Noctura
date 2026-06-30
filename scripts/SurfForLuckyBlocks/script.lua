@@ -1,8 +1,22 @@
+--[[
+    _   __           __                  
+   / | / /___  _____/ /___  ___________ _
+  /  |/ / __ \/ ___/ __/ / / / ___/ __ `/
+ / /|  / /_/ / /__/ /_/ /_/ / /  / /_/ / 
+/_/ |_/\____/\___/\__/\__,_/_/   \__,_(_)
+
+
+-- Noctura. Enhance a game. Your way <3
+
+]]
+
 local selectedLuckyBlock
 local excludedRarities = {}
 local rarities = {"Brainrot God", "Common", "Divine", "Epic", "Legendary", "Mythic", "OG", "Rare", "Secret", "Transcendent", "Water", "Ghost", "Lava", "Taco", "67", "Rainbow"}
 
-getgenv().RAYFIELD_ASSET_ID = 120960636838063
+
+getgenv().RAYFIELD_ASSET_ID = 120960636838063 
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
@@ -18,16 +32,20 @@ for _, game_name in ipairs(supportedGames) do
 	end
 end
 
+
+
 local Window = Rayfield:CreateWindow({
-   Name = "🌑 Noctura - " .. gameName,
-   LoadingTitle = "Noctura",
-   LoadingSubtitle = "Surf for Lucky Blocks",
-   ConfigurationSaving = {
-      Enabled = false,
-      FolderName = "Noctura",
-      FileName = "SurfForLuckyBlocksConfig"
-   },
-   Theme = "Amethyst"
+    Name = "Noctura",
+    Icon = "moon",
+    LoadingTitle = "Noctura | Loading",
+    LoadingSubtitle = "hi mane",
+    Theme = "Amethyst",
+    DisableRayfieldPrompts = true,
+    Discord = {
+        Enabled = true,
+        Invite = "bnmQTFs7QV",
+        RememberJoins = true
+    },
 })
 
 -- Rainbow Accent
