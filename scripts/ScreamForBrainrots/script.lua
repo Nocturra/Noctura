@@ -10,7 +10,7 @@ local Window = Rayfield:CreateWindow({
       FolderName = "Noctura",
       FileName = "ScreamForBrainrotsConfig"
    },
-   Theme = "AmberGlow"
+   Theme = "Amethyst"
 })
 
 local main = Window:CreateTab("Main")
