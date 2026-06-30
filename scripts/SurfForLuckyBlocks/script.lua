@@ -37,126 +37,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local HttpService = game:GetService("HttpService")
 local player = game.Players.LocalPlayer
 
--- ========== CONFIG SYSTEM ==========
-local configPath = Library.Settings.ConfigPath or "Noctura/Configs"
-
-local function ensureConfigFolder()
-	pcall(function()
-		if not isfolder(configPath) then
-			makefolder(configPath)
-		end
-	end)
-end
-
-local function getConfigList()
-	ensureConfigFolder()
-	local list = {}
-	pcall(function()
-		for _, file in ipairs(listfiles(configPath)) do
-			local name = file:match("([^/\\]+)%.json$") or file:match("([^/\\]+)%.txt$")
-			if name then
-				table.insert(list, name)
-			end
-		end
-	end)
-	return list
-end
-
-local function saveConfig(name)
-	ensureConfigFolder()
-	local filePath = configPath .. "/" .. name .. ".json"
-
-	local config = {
-		Flags = {},
-		Sliders = {},
-		Accent = nil,
-		RainbowAccent = rainbowActive,
-	}
-
-	-- Gather all toggle flags and slider values from all tabs
-	for _, tab in ipairs(Window.Tabs) do
-		for flag, value in pairs(tab.Flags) do
-			config.Flags[flag] = value
-		end
-		for _, section in ipairs(tab.Sections) do
-			for _, item in ipairs(section.List) do
-				if item.Type == "Slider" then
-					config.Sliders[item.Flag or item.Name] = item.Value
-				end
-			end
-		end
-	end
-
-	-- Save current accent color
-	local r, g, b = Library.Theme.Accent.R, Library.Theme.Accent.G, Library.Theme.Accent.B
-	config.Accent = { r = r, g = g, b = b }
-
-	pcall(function()
-		writefile(filePath, HttpService:JSONEncode(config))
-	end)
-end
-
-local function loadConfig(name)
-	ensureConfigFolder()
-	local filePath = configPath .. "/" .. name .. ".json"
-
-	pcall(function()
-		if not isfile(filePath) then return end
-
-		local raw = readfile(filePath)
-		local config = HttpService:JSONDecode(raw)
-
-		if not config then return end
-
-		-- Apply toggle flags
-		if config.Flags then
-			for _, tab in ipairs(Window.Tabs) do
-				for _, section in ipairs(tab.Sections) do
-					for _, item in ipairs(section.List) do
-						local flag = item.Flag or item.Name
-						if item.Type == "Toggle" and config.Flags[flag] ~= nil then
-							item:Set(config.Flags[flag], false)
-						end
-					end
-				end
-			end
-		end
-
-		-- Apply slider values
-		if config.Sliders then
-			for _, tab in ipairs(Window.Tabs) do
-				for _, section in ipairs(tab.Sections) do
-					for _, item in ipairs(section.List) do
-						local flag = item.Flag or item.Name
-						if item.Type == "Slider" and config.Sliders[flag] ~= nil then
-							item:Set(config.Sliders[flag])
-						end
-					end
-				end
-			end
-		end
-
-		-- Apply accent color
-		if config.RainbowAccent then
-			rainbowActive = true
-			Window:SetAccent("rainbow")
-		elseif config.Accent then
-			rainbowActive = false
-			Window:SetAccent(Color3.new(config.Accent.r, config.Accent.g, config.Accent.b))
-		end
-	end)
-end
-
-local function deleteConfig(name)
-	ensureConfigFolder()
-	local filePath = configPath .. "/" .. name .. ".json"
-	pcall(function()
-		if isfile(filePath) then
-			delfile(filePath)
-		end
-	end)
-end
-
 -- ========== ABOUT TAB ==========
 local Tab = Window:CreateTab("About")
 Tab:CreateSection("Noctura")
@@ -430,6 +310,10 @@ if isSupported then
 	local collecting = false
 	local upgradingFriend = false
 	local upgradingSpeed = false
+	local upgradingBoost = false
+	local upgradingCarry = false
+	local autoSelling = false
+	local autoRebirthing = false
 
 	local function getLuckyBlocks()
 		local blocks = {}
@@ -590,9 +474,7 @@ if isSupported then
 
 	-- ========== UPGRADES TAB ==========
 	local UpgradesTab = Window:CreateTab("Upgrades")
-	UpgradesTab:CreateSection("Friend Upgrades")
-	UpgradesTab:CreateSection("Speed Upgrades")
-	UpgradesTab:CreateSection("Other Upgrades")
+	UpgradesTab:CreateSection("Upgrades")
 
 	UpgradesTab:CreateToggle({
 		Name = "Burst Upgrade Friend 1-100",
@@ -676,10 +558,10 @@ if isSupported then
 		CurrentValue = false,
 		Flag = "AutoUpgradeBoost",
 		Callback = function(v)
-			upgradingSpeed = v
+			upgradingBoost = v
 			if v then
 				task.spawn(function()
-					while upgradingSpeed do
+					while upgradingBoost do
 						upgradeBoost:FireServer()
 						task.wait(0.05)
 					end
@@ -693,10 +575,10 @@ if isSupported then
 		CurrentValue = false,
 		Flag = "AutoUpgradeCarry",
 		Callback = function(v)
-			upgradingSpeed = v
+			upgradingCarry = v
 			if v then
 				task.spawn(function()
-					while upgradingSpeed do
+					while upgradingCarry do
 						upgradeCarry:FireServer()
 						task.wait(0.05)
 					end
@@ -731,10 +613,10 @@ if isSupported then
 		CurrentValue = false,
 		Flag = "AutoSellAll",
 		Callback = function(v)
-			upgradingSpeed = v
+			autoSelling = v
 			if v then
 				task.spawn(function()
-					while upgradingSpeed do
+					while autoSelling do
 						sellAll:FireServer()
 						task.wait(0.05)
 					end
@@ -757,10 +639,10 @@ if isSupported then
 		CurrentValue = false,
 		Flag = "AutoRebirth",
 		Callback = function(v)
-			upgradingSpeed = v
+			autoRebirthing = v
 			if v then
 				task.spawn(function()
-					while upgradingSpeed do
+					while autoRebirthing do
 						rebirthEvent:FireServer()
 						task.wait(0.05)
 					end
@@ -778,9 +660,7 @@ if isSupported then
 
 	-- ========== UTILITIES TAB ==========
 	local UtilitiesTab = Window:CreateTab("Utilities")
-	UtilitiesTab:CreateSection("Teleport")
-	UtilitiesTab:CreateSection("ESP")
-	UtilitiesTab:CreateSection("Exclude Rarities")
+	UtilitiesTab:CreateSection("Utilities")
 
 	UtilitiesTab:CreateButton({
 		Name = "Teleport to Base",
