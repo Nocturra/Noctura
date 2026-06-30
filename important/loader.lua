@@ -72,7 +72,7 @@ if matchingScript then
             FolderName = "Noctura",
             FileName = "LoaderConfig"
         },
-        Theme = "AmberGlow"
+        Theme = "Amethyst"
     })
 
     local Tab = GUI:CreateTab("Home")
