@@ -1,3 +1,15 @@
+--[[
+    _   __           __                  
+   / | / /___  _____/ /___  ___________ _
+  /  |/ / __ \/ ___/ __/ / / / ___/ __ `/
+ / /|  / /_/ / /__/ /_/ /_/ / /  / /_/ / 
+/_/ |_/\____/\___/\__/\__,_/_/   \__,_(_)
+
+
+-- Noctura. Enhance a game. Your way <3
+
+]]
+
 if getgenv().NocturaLoaded then
     pcall(function()
         getgenv().NocturaUnload()
@@ -401,20 +413,8 @@ else
     notify("failed to load sirius sense esp. esp features disabled.")
 end
 
-getgenv().RAYFIELD_ASSET_ID = 120960636838063
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local Window = Rayfield:CreateWindow({
-   Name = "Noctura",
-   LoadingTitle = "Noctura",
-   LoadingSubtitle = "Universal Script",
-   ConfigurationSaving = {
-      Enabled = false,
-      FolderName = "Noctura",
-      FileName = "UniConfig"
-   },
-   Theme = "Amethyst"
-})
+
 
 local Tabs = {
     Main = Window:CreateTab('Aimbot'),
