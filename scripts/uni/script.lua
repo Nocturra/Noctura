@@ -413,7 +413,7 @@ local Window = Rayfield:CreateWindow({
       FolderName = "Noctura",
       FileName = "UniConfig"
    },
-   Theme = "AmberGlow"
+   Theme = "Amethyst"
 })
 
 local Tabs = {
