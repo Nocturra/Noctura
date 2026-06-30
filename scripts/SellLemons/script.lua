@@ -10,7 +10,7 @@ local Window = Rayfield:CreateWindow({
       FolderName = "Noctura",
       FileName = "SellLemonsConfig"
    },
-   Theme = "AmberGlow"
+   Theme = "Amethyst"
 })
 
 local AutofarmTab = Window:CreateTab("Autofarm")
