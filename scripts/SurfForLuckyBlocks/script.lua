@@ -27,7 +27,7 @@ local Window = Rayfield:CreateWindow({
       FolderName = "Noctura",
       FileName = "SurfForLuckyBlocksConfig"
    },
-   Theme = "AmberGlow"
+   Theme = "Amethyst"
 })
 
 -- Rainbow Accent
