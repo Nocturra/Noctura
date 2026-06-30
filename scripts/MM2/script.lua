@@ -1,7 +1,17 @@
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/GhostDuckyy/UI-Libraries/refs/heads/main/Venus/source.lua", true))()
-local notif = loadstring(game:HttpGet("https://raw.githubusercontent.com/insanedude59/notiflib/main/main"))()
+getgenv().RAYFIELD_ASSET_ID = 120960636838063
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local main = library:Load({Name = "Noctura | MM2 V6.6", Theme = "Dark", SizeX = 540, SizeY = 660})
+local Window = Rayfield:CreateWindow({
+   Name = "Noctura | MM2 V6.6",
+   LoadingTitle = "Noctura",
+   LoadingSubtitle = "by Noctura",
+   ConfigurationSaving = {
+      Enabled = false,
+      FolderName = "Noctura",
+      FileName = "MM2Config"
+   },
+   Theme = "AmberGlow"
+})
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -39,7 +49,7 @@ fovCircle.Color = Color3.fromRGB(255, 255, 255)
 
 local function saveConfig()
     local success, err = pcall(function() writefile(configName, HttpService:JSONEncode(toggles)) end)
-    if success then notif:Notification("Saved", "Configuration saved successfully.", "GothamSemibold", "Gotham", 3)
+    if success then Rayfield:Notify({Title = "Saved", Content = "Configuration saved successfully.", Duration = 3})
     else warn("Failed to save config: " .. tostring(err)) end
 end
 
@@ -50,7 +60,7 @@ local function loadConfig()
             for k, v in pairs(data) do toggles[k] = v end
             Camera.FieldOfView = toggles.FOV
             fovCircle.Radius = toggles.AimbotRadius
-            notif:Notification("Loaded", "Configuration loaded successfully.", "GothamSemibold", "Gotham", 3)
+            Rayfield:Notify({Title = "Loaded", Content = "Configuration loaded successfully.", Duration = 3})
         end
     end
 end
@@ -197,6 +207,26 @@ UserInputService.JumpRequest:Connect(function()
     end
 end)
 
+local function createTextESP(player)
+    local textEsp = player.Character:FindFirstChild("NocturaTextESP")
+    if not textEsp and player.Character:FindFirstChild("Head") then
+        textEsp = Instance.new("BillboardGui", player.Character)
+        textEsp.Name = "NocturaTextESP"; textEsp.Size = UDim2.new(0, 100, 0, 40)
+        textEsp.StudsOffset = Vector3.new(0, 2.5, 0); textEsp.AlwaysOnTop = true
+        textEsp.Adornee = player.Character.Head
+        local label = Instance.new("TextLabel", textEsp)
+        label.Size = UDim2.new(1, 0, 1, 0); label.BackgroundTransparency = 1
+        label.TextScaled = true; label.Font = Enum.Font.GothamBold
+        label.Name = "TextLabel"
+    end
+    return textEsp
+end
+
+local function removeTextESP(player)
+    local textEsp = player.Character:FindFirstChild("NocturaTextESP")
+    if textEsp then textEsp:Destroy() end
+end
+
 RunService.RenderStepped:Connect(function()
     local myChar = LocalPlayer.Character
     local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
@@ -246,7 +276,7 @@ RunService.RenderStepped:Connect(function()
                 local dist = (myRoot.Position - enemyRoot.Position).Magnitude
                 
                 if toggles.NotifyKiller and dist < 25 and not notifiedMurderers[player.Name] then
-                    notif:Notification("Warning", player.Name .. " is approaching!", "GothamSemibold", "Gotham", 4)
+                    Rayfield:Notify({Title = "Warning", Content = player.Name .. " is approaching!", Duration = 4})
                     notifiedMurderers[player.Name] = true
                 elseif dist > 35 then
                     notifiedMurderers[player.Name] = false
@@ -254,7 +284,7 @@ RunService.RenderStepped:Connect(function()
                 
                 if toggles.AutoEvade and dist < 12 then
                     myRoot.CFrame = myRoot.CFrame * CFrame.new(0, 0, 20)
-                    notif:Notification("Evasion", "Automatically evaded the murderer.", "GothamSemibold", "Gotham", 2)
+                    Rayfield:Notify({Title = "Evasion", Content = "Automatically evaded the murderer.", Duration = 2})
                 end
             end
         elseif role == "Sheriff" then
@@ -273,18 +303,16 @@ RunService.RenderStepped:Connect(function()
             highlight.FillTransparency = 0.7; highlight.OutlineTransparency = 0
         elseif highlight then highlight:Destroy() end
 
-        if shouldShow and toggles.TextESP and player.Character:FindFirstChild("Head") then
-            if not textEsp then
-                textEsp = Instance.new("BillboardGui", player.Character)
-                textEsp.Name = "NocturaTextESP"; textEsp.Size = UDim2.new(0, 100, 0, 40)
-                textEsp.StudsOffset = Vector3.new(0, 2.5, 0); textEsp.AlwaysOnTop = true
-                local label = Instance.new("TextLabel", textEsp)
-                label.Size = UDim2.new(1, 0, 1, 0); label.BackgroundTransparency = 1
-                label.TextScaled = true; label.Font = Enum.Font.GothamBold
+        if toggles.TextESP then
+            textEsp = createTextESP(player)
+            if textEsp and textEsp:FindFirstChild("TextLabel") then
+                textEsp.TextLabel.Text = player.Name .. "\n[" .. roleText .. "]"
+                textEsp.TextLabel.TextColor3 = color
+                textEsp.Enabled = shouldShow
             end
-            textEsp.TextLabel.Text = player.Name .. "\n[" .. roleText .. "]"
-            textEsp.TextLabel.TextColor3 = color
-        elseif textEsp then textEsp:Destroy() end
+        elseif textEsp then
+            removeTextESP(player)
+        end
 
         if toggles.HitboxExpander and enemyRoot then
             enemyRoot.Size = Vector3.new(12, 12, 12)
@@ -307,8 +335,8 @@ RunService.RenderStepped:Connect(function()
         local gunDrop = workspace:FindFirstChild("GunDrop") or workspace:FindFirstChild("GunDrop", true)
         if gunDrop then
             myRoot.CFrame = gunDrop.CFrame
-            toggles.AutoGrabGun = false 
-            notif:Notification("Success", "Retrieved the dropped weapon.", "GothamSemibold", "Gotham", 3)
+            toggles.AutoGrabGun = false
+            Rayfield:Notify({Title = "Success", Content = "Retrieved the dropped weapon.", Duration = 3})
         end
     end
 
@@ -328,83 +356,249 @@ RunService.Stepped:Connect(function()
 end)
 
 
-local espTab = main:Tab("ESP")
-local combatTab = main:Tab("Combat")
-local moveTab = main:Tab("Movement")
-local utilTab = main:Tab("Utility")
-local playerTab = main:Tab("Players")
-local serverTab = main:Tab("Server")
-local settingsTab = main:Tab("Settings")
+local ESPTab = Window:CreateTab("ESP")
+local CombatTab = Window:CreateTab("Combat")
+local MovementTab = Window:CreateTab("Movement")
+local UtilityTab = Window:CreateTab("Utility")
+local PlayersTab = Window:CreateTab("Players")
+local ServerTab = Window:CreateTab("Server")
+local SettingsTab = Window:CreateTab("Settings")
 
+local ESPSection = ESPTab:CreateSection("Visuals")
+ESPTab:CreateToggle({
+   Name = "Murderer ESP",
+   CurrentValue = false,
+   Flag = "MurdESP",
+   Callback = function(Value)
+      toggles.MurdESP = Value
+   end,
+})
+ESPTab:CreateToggle({
+   Name = "Sheriff ESP",
+   CurrentValue = false,
+   Flag = "SheriffESP",
+   Callback = function(Value)
+      toggles.SheriffESP = Value
+   end,
+})
+ESPTab:CreateToggle({
+   Name = "Innocent ESP",
+   CurrentValue = false,
+   Flag = "InnocentESP",
+   Callback = function(Value)
+      toggles.InnocentESP = Value
+   end,
+})
+ESPTab:CreateToggle({
+   Name = "Text ESP",
+   CurrentValue = false,
+   Flag = "TextESP",
+   Callback = function(Value)
+      toggles.TextESP = Value
+   end,
+})
+ESPTab:CreateToggle({
+   Name = "Notify Murderer Proximity",
+   CurrentValue = false,
+   Flag = "NotifMurd",
+   Callback = function(Value)
+      toggles.NotifyKiller = Value
+   end,
+})
+ESPTab:CreateToggle({
+   Name = "Map X-Ray",
+   CurrentValue = false,
+   Flag = "XRay",
+   Callback = function(Value)
+      toggles.XRay = Value
+      handleXRay()
+   end,
+})
 
-local espSection = espTab:Section({Name = "Visuals", column = 1})
-espSection:Toggle({Name = "Murderer ESP", Flag = "MurdESP", callback = function(bool) toggles.MurdESP = bool end})
-espSection:Toggle({Name = "Sheriff ESP", Flag = "SheriffESP", callback = function(bool) toggles.SheriffESP = bool end})
-espSection:Toggle({Name = "Innocent ESP", Flag = "InnocentESP", callback = function(bool) toggles.InnocentESP = bool end})
-espSection:Toggle({Name = "Text ESP", Flag = "TextESP", callback = function(bool) toggles.TextESP = bool end})
-espSection:Toggle({Name = "Notify Murderer Proximity", Flag = "NotifMurd", callback = function(bool) toggles.NotifyKiller = bool end})
-espSection:Toggle({Name = "Map X-Ray", Flag = "XRay", callback = function(bool) toggles.XRay = bool; handleXRay() end})
+local CombatSection = CombatTab:CreateSection("Combat Tools")
+CombatTab:CreateToggle({
+   Name = "Enable Aimbot (Hold Right-Click)",
+   CurrentValue = false,
+   Flag = "AimbotToggle",
+   Callback = function(Value)
+      toggles.Aimbot = Value
+      fovCircle.Visible = Value
+   end,
+})
+CombatTab:CreateSlider({
+   Name = "Aimbot Target Radius",
+   Range = {50, 400},
+   Increment = 1,
+   Suffix = "",
+   CurrentValue = 150,
+   Flag = "AimbotRadius",
+   Callback = function(Value)
+      toggles.AimbotRadius = Value
+      fovCircle.Radius = Value
+   end,
+})
+CombatTab:CreateToggle({
+   Name = "Hitbox Expander",
+   CurrentValue = false,
+   Flag = "HitboxExpander",
+   Callback = function(Value)
+      toggles.HitboxExpander = Value
+   end,
+})
+CombatTab:CreateToggle({
+   Name = "Auto-Grab Dropped Gun",
+   CurrentValue = false,
+   Flag = "AutoGun",
+   Callback = function(Value)
+      toggles.AutoGrabGun = Value
+   end,
+})
+CombatTab:CreateToggle({
+   Name = "Auto-Evade Proximity",
+   CurrentValue = false,
+   Flag = "AutoEvade",
+   Callback = function(Value)
+      toggles.AutoEvade = Value
+   end,
+})
+CombatTab:CreateToggle({
+   Name = "Auto-Accuse on Round Start",
+   CurrentValue = false,
+   Flag = "AutoLeak",
+   Callback = function(Value)
+      toggles.AutoLeak = Value
+   end,
+})
 
-local combatSection = combatTab:Section({Name = "Combat Tools", column = 1})
-combatSection:Toggle({Name = "Enable Aimbot (Hold Right-Click)", Flag = "AimbotToggle", callback = function(bool) toggles.Aimbot = bool; fovCircle.Visible = bool end})
-combatSection:Slider({Name = "Aimbot Target Radius", Min = 50, Max = 400, Default = 150, Callback = function(val) toggles.AimbotRadius = val; fovCircle.Radius = val end})
-combatSection:Toggle({Name = "Hitbox Expander", Flag = "HitboxExpander", callback = function(bool) toggles.HitboxExpander = bool end})
-combatSection:Toggle({Name = "Auto-Grab Dropped Gun", Flag = "AutoGun", callback = function(bool) toggles.AutoGrabGun = bool end})
-combatSection:Toggle({Name = "Auto-Evade Proximity", Flag = "AutoEvade", callback = function(bool) toggles.AutoEvade = bool end})
-combatSection:Toggle({Name = "Auto-Accuse on Round Start", Flag = "AutoLeak", callback = function(bool) toggles.AutoLeak = bool end})
+CombatTab:CreateButton({
+   Name = "Eliminate All (Requires Knife)",
+   Callback = function()
+      local char = LocalPlayer.Character
+      if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+      local knife = char:FindFirstChild("Knife") or LocalPlayer.Backpack:FindFirstChild("Knife")
+      if not knife then return Rayfield:Notify({Title = "Error", Content = "Knife tool is required.", Duration = 3}) end
 
-combatSection:Button({Name = "Eliminate All (Requires Knife)", Callback = function()
-    local char = LocalPlayer.Character
-    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-    local knife = char:FindFirstChild("Knife") or LocalPlayer.Backpack:FindFirstChild("Knife")
-    if not knife then return notif:Notification("Error", "Knife tool is required.", "GothamSemibold", "Gotham", 3) end
-
-    char.Humanoid:EquipTool(knife)
-    for _, p in pairs(Players:GetPlayers()) do
-        if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+      char.Humanoid:EquipTool(knife)
+      for _, p in pairs(Players:GetPlayers()) do
+         if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
             char.HumanoidRootPart.CFrame = p.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1.5)
             task.wait(0.2)
-        end
-    end
-end})
+         end
+      end
+   end,
+})
 
-local moveSection = moveTab:Section({Name = "Mobility", column = 1})
-moveSection:Toggle({Name = "Infinite Jump", Flag = "InfJump", callback = function(bool) toggles.InfJump = bool end})
-moveSection:Toggle({Name = "Noclip", Flag = "Noclip", callback = function(bool) toggles.Noclip = bool end})
-moveSection:Slider({Name = "WalkSpeed Override", Min = 16, Max = 120, Default = 16, Callback = function(val) toggles.WalkSpeed = val end})
-moveSection:Slider({Name = "Field of View (FOV)", Min = 70, Max = 120, Default = 70, Callback = function(val) toggles.FOV = val; Camera.FieldOfView = val end})
+local MovementSection = MovementTab:CreateSection("Mobility")
+MovementTab:CreateToggle({
+   Name = "Infinite Jump",
+   CurrentValue = false,
+   Flag = "InfJump",
+   Callback = function(Value)
+      toggles.InfJump = Value
+   end,
+})
+MovementTab:CreateToggle({
+   Name = "Noclip",
+   CurrentValue = false,
+   Flag = "Noclip",
+   Callback = function(Value)
+      toggles.Noclip = Value
+   end,
+})
+MovementTab:CreateSlider({
+   Name = "WalkSpeed Override",
+   Range = {16, 120},
+   Increment = 1,
+   Suffix = "",
+   CurrentValue = 16,
+   Flag = "WalkSpeed",
+   Callback = function(Value)
+      toggles.WalkSpeed = Value
+   end,
+})
+MovementTab:CreateSlider({
+   Name = "Field of View (FOV)",
+   Range = {70, 120},
+   Increment = 1,
+   Suffix = "",
+   CurrentValue = 70,
+   Flag = "FOV",
+   Callback = function(Value)
+      toggles.FOV = Value
+      Camera.FieldOfView = Value
+   end,
+})
 
-local locSection = moveTab:Section({Name = "Locations", column = 2})
-locSection:Button({Name = "Teleport to Safe Zone", Callback = function()
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 800, 0)
-        LocalPlayer.Character.HumanoidRootPart.Anchored = true
-        notif:Notification("Teleported", "Moved to safe location. Un-anchor to resume movement.", "GothamSemibold", "Gotham", 3)
-    end
-end})
-locSection:Button({Name = "Disable Anchor", Callback = function()
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        LocalPlayer.Character.HumanoidRootPart.Anchored = false
-    end
-end})
+MovementTab:CreateSection("Locations")
+MovementTab:CreateButton({
+   Name = "Teleport to Safe Zone",
+   Callback = function()
+      if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+         LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 800, 0)
+         LocalPlayer.Character.HumanoidRootPart.Anchored = true
+         Rayfield:Notify({Title = "Teleported", Content = "Moved to safe location. Un-anchor to resume movement.", Duration = 3})
+      end
+   end,
+})
+MovementTab:CreateButton({
+   Name = "Disable Anchor",
+   Callback = function()
+      if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+         LocalPlayer.Character.HumanoidRootPart.Anchored = false
+      end
+   end,
+})
 
-local utilSection = utilTab:Section({Name = "Automation & Fun", column = 1})
-utilSection:Toggle({Name = "Auto-Farm Coins", Flag = "AutoCoin", callback = function(bool) toggles.AutoCoin = bool end})
-utilSection:Toggle({Name = "Anti-AFK", Flag = "AntiAFK", callback = function(bool) toggles.AntiAFK = bool end})
-utilSection:Toggle({Name = "Enable Chat Spammer", Flag = "ChatSpam", callback = function(bool) toggles.ChatSpam = bool end})
+local UtilitySection = UtilityTab:CreateSection("Automation & Fun")
+UtilityTab:CreateToggle({
+   Name = "Auto-Farm Coins",
+   CurrentValue = false,
+   Flag = "AutoCoin",
+   Callback = function(Value)
+      toggles.AutoCoin = Value
+   end,
+})
+UtilityTab:CreateToggle({
+   Name = "Anti-AFK",
+   CurrentValue = true,
+   Flag = "AntiAFK",
+   Callback = function(Value)
+      toggles.AntiAFK = Value
+   end,
+})
+UtilityTab:CreateToggle({
+   Name = "Enable Chat Spammer",
+   CurrentValue = false,
+   Flag = "ChatSpam",
+   Callback = function(Value)
+      toggles.ChatSpam = Value
+   end,
+})
 
-local srvSection = serverTab:Section({Name = "Lobby Controls", column = 1})
-srvSection:Button({Name = "Rejoin Current Server", Callback = function()
-    TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
-end})
-srvSection:Button({Name = "Server Hop", Callback = function()
-    notif:Notification("Hopping", "Finding a new server...", "GothamSemibold", "Gotham", 3)
-    TeleportService:Teleport(game.PlaceId, LocalPlayer)
-end})
+local ServerSection = ServerTab:CreateSection("Lobby Controls")
+ServerTab:CreateButton({
+   Name = "Rejoin Current Server",
+   Callback = function()
+      TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+   end,
+})
+ServerTab:CreateButton({
+   Name = "Server Hop",
+   Callback = function()
+      Rayfield:Notify({Title = "Hopping", Content = "Finding a new server...", Duration = 3})
+      TeleportService:Teleport(game.PlaceId, LocalPlayer)
+   end,
+})
 
-local configSection = settingsTab:Section({Name = "Configuration", column = 1})
-configSection:Button({Name = "Save Configuration", Callback = saveConfig})
-configSection:Button({Name = "Load Configuration", Callback = loadConfig})
+local ConfigSection = SettingsTab:CreateSection("Configuration")
+SettingsTab:CreateButton({
+   Name = "Save Configuration",
+   Callback = saveConfig
+})
+SettingsTab:CreateButton({
+   Name = "Load Configuration",
+   Callback = loadConfig
+})
 
 local playerSections = {}
 local function refreshPlayerList()
@@ -412,34 +606,37 @@ local function refreshPlayerList()
     playerSections = {}
     for _, player in pairs(Players:GetPlayers()) do
         if player == LocalPlayer then continue end
-        local ps = playerTab:Section({Name = player.Name, column = 1})
-        table.insert(playerSections, ps)
-        
-        ps:Button({Name = "Teleport To", Callback = function()
-            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character then 
-                LocalPlayer.Character.HumanoidRootPart.Anchored = false
-                LocalPlayer.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame 
-            end
-        end})
-        
-        ps:Button({Name = "Spectate", Callback = function()
-            if player.Character and player.Character:FindFirstChild("Humanoid") then
-                Camera.CameraSubject = player.Character.Humanoid
-                notif:Notification("Spectating", "Watching " .. player.Name, "GothamSemibold", "Gotham", 2)
-            end
-        end})
+        PlayersTab:CreateSection(player.Name)
+        PlayersTab:CreateButton({
+            Name = "Teleport To " .. player.Name,
+            Callback = function()
+                if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character then
+                    LocalPlayer.Character.HumanoidRootPart.Anchored = false
+                    LocalPlayer.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
+                end
+            end,
+        })
+        PlayersTab:CreateButton({
+            Name = "Spectate " .. player.Name,
+            Callback = function()
+                if player.Character and player.Character:FindFirstChild("Humanoid") then
+                    Camera.CameraSubject = player.Character.Humanoid
+                    Rayfield:Notify({Title = "Spectating", Content = "Watching " .. player.Name, Duration = 2})
+                end
+            end,
+        })
     end
-    
-    local meSection = playerTab:Section({Name = "Local Controls", column = 2})
-    table.insert(playerSections, meSection)
-    meSection:Button({Name = "Stop Spectating", Callback = function()
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-            Camera.CameraSubject = LocalPlayer.Character.Humanoid
-        end
-    end})
+
+    PlayersTab:CreateSection("Local Controls")
+    PlayersTab:CreateButton({
+        Name = "Stop Spectating",
+        Callback = function()
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                Camera.CameraSubject = LocalPlayer.Character.Humanoid
+            end
+        end,
+    })
 end
 Players.PlayerAdded:Connect(refreshPlayerList)
 Players.PlayerRemoving:Connect(refreshPlayerList)
 refreshPlayerList()
-
-notif:Notification("Noctura V6.6", "Script execution complete. Enjoy the sticky aim!", "GothamSemibold", "Gotham", 5)
