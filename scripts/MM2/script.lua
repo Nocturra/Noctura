@@ -10,7 +10,7 @@ local Window = Rayfield:CreateWindow({
       FolderName = "Noctura",
       FileName = "MM2Config"
    },
-   Theme = "AmberGlow"
+   Theme = "Amethyst"
 })
 
 local Players = game:GetService("Players")
