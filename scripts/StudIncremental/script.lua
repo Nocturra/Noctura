@@ -1,6 +1,19 @@
-local Luminosity = loadstring(game:HttpGet("https://raw.githubusercontent.com/iHavoc101/Genesis-Studios/main/UserInterface/Luminosity.lua", true))()
+getgenv().RAYFIELD_ASSET_ID = 120960636838063
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Window = Rayfield:CreateWindow({
+   Name = "Noctura - Stud Incremental",
+   LoadingTitle = "Noctura",
+   LoadingSubtitle = "Gooby this, Gooby that.",
+   ConfigurationSaving = {
+      Enabled = false,
+      FolderName = "Noctura",
+      FileName = "StudIncrementalConfig"
+   },
+   Theme = "AmberGlow"
+})
 
 local Toggles = {
     StudUpgrade = false,
@@ -21,109 +34,145 @@ local function RunLoop(key, event, value)
     end)
 end
 
-local Window = Luminosity.new("Noctura", "Gooby this, Gooby that.", 4370345701)
+local MainTab = Window:CreateTab("Main")
+local Area3Tab = Window:CreateTab("Area 3")
+local TitlesTab = Window:CreateTab("Titles")
+local SettingsTab = Window:CreateTab("Settings")
 
-local MainTab = Window.Tab("Main", 6026568198)
-local Area3Tab = Window.Tab("Area 3", 6026568198)
-local TitlesTab = Window.Tab("Titles", 6026568198)
-local SettingsTab = Window.Tab("Settings", 6026568198)
-local StudFolder = MainTab.Folder("Studs", "Stud upgrade automation")
-
-StudFolder.Toggle("Auto Stud Upgrade", function(state)
-    Toggles.StudUpgrade = state
-    if state then
-        task.spawn(function()
+MainTab:CreateSection("Studs")
+MainTab:CreateToggle({
+   Name = "Auto Stud Upgrade",
+   CurrentValue = false,
+   Flag = "StudUpgrade",
+   Callback = function(state)
+      Toggles.StudUpgrade = state
+      if state then
+         task.spawn(function()
             while Toggles.StudUpgrade do
-                pcall(function()
-                    ReplicatedStorage.Area1.StudUpgradeWall:FireServer(1)
-                end)
-                task.wait()
+               pcall(function()
+                  ReplicatedStorage.Area1.StudUpgradeWall:FireServer(1)
+               end)
+               task.wait()
             end
-        end)
-    end
-end)
+         end)
+      end
+   end,
+})
+MainTab:CreateButton({
+   Name = "Upgrade Once",
+   Callback = function()
+      ReplicatedStorage.Area1.StudUpgradeWall:FireServer(1)
+   end,
+})
 
-StudFolder.Button("Upgrade Once", "Run", function()
-    ReplicatedStorage.Area1.StudUpgradeWall:FireServer(1)
-end)
-
-local CurrencyFolder = MainTab.Folder("Currency", "Auto currency farming")
-
+MainTab:CreateSection("Currency")
 local SelectedCurrency = "Stud"
+MainTab:CreateDropdown({
+   Name = "Select Currency",
+   Options = {"Stud", "GoldStud", "DiamondStud", "EmeraldStud", "RubyStud"},
+   CurrentOption = {"Stud"},
+   MultipleOptions = false,
+   Flag = "SelectedCurrency",
+   Callback = function(Options)
+      SelectedCurrency = Options[1]
+   end,
+})
+MainTab:CreateToggle({
+   Name = "Auto Currency",
+   CurrentValue = false,
+   Flag = "Currency",
+   Callback = function(state)
+      Toggles.Currency = state
+      if state then RunLoop("Currency", ReplicatedStorage.Area1.CurrencyGain, SelectedCurrency) end
+   end,
+})
 
-CurrencyFolder.Dropdown("Select Currency", {"Stud", "GoldStud", "DiamondStud", "EmeraldStud", "RubyStud"}, function(val)
-    SelectedCurrency = val
-end)
-
-CurrencyFolder.Toggle("Auto Currency", function(state)
-    Toggles.Currency = state
-    if state then RunLoop("Currency", ReplicatedStorage.Area1.CurrencyGain, SelectedCurrency) end
-end)
-
-local XpFolder = MainTab.Folder("XP & Rebirth", "XP and rebirth automation")
-
-XpFolder.Toggle("Auto XP", function(state)
-    Toggles.Xp = state
-    if state then RunLoop("Xp", ReplicatedStorage.AddXpEvent) end
-end)
-
-XpFolder.Toggle("Auto Rebirth", function(state)
-    Toggles.Rebirth = state
-    if state then
-        task.spawn(function()
+MainTab:CreateSection("XP & Rebirth")
+MainTab:CreateToggle({
+   Name = "Auto XP",
+   CurrentValue = false,
+   Flag = "Xp",
+   Callback = function(state)
+      Toggles.Xp = state
+      if state then RunLoop("Xp", ReplicatedStorage.AddXpEvent) end
+   end,
+})
+MainTab:CreateToggle({
+   Name = "Auto Rebirth",
+   CurrentValue = false,
+   Flag = "Rebirth",
+   Callback = function(state)
+      Toggles.Rebirth = state
+      if state then
+         task.spawn(function()
             while Toggles.Rebirth do
-                pcall(function()
-                    ReplicatedStorage.Area1.Rebirth:FireServer(2)
-                end)
-                task.wait(0.1)
+               pcall(function()
+                  ReplicatedStorage.Area1.Rebirth:FireServer(2)
+               end)
+               task.wait(0.1)
             end
-        end)
-    end
-end)
+         end)
+      end
+   end,
+})
 
-local Area2Folder = MainTab.Folder("Area 2", "Area 2 automation")
+MainTab:CreateSection("Area 2")
+MainTab:CreateToggle({
+   Name = "Auto Points",
+   CurrentValue = false,
+   Flag = "Points",
+   Callback = function(state)
+      Toggles.Points = state
+      if state then RunLoop("Points", ReplicatedStorage.Area2.PointsGain, 1) end
+   end,
+})
+MainTab:CreateToggle({
+   Name = "Auto Tier Up",
+   CurrentValue = false,
+   Flag = "TierUp",
+   Callback = function(state)
+      Toggles.TierUp = state
+      if state then RunLoop("TierUp", ReplicatedStorage.Area2.TierUp, 1) end
+   end,
+})
 
-Area2Folder.Toggle("Auto Points", function(state)
-    Toggles.Points = state
-    if state then RunLoop("Points", ReplicatedStorage.Area2.PointsGain, 1) end
-end)
+Area3Tab:CreateSection("Blocks")
+Area3Tab:CreateToggle({
+   Name = "Auto Blocks",
+   CurrentValue = false,
+   Flag = "Blocks",
+   Callback = function(state)
+      Toggles.Blocks = state
+      if state then RunLoop("Blocks", ReplicatedStorage.Area3.BlocksGain) end
+   end,
+})
 
-Area2Folder.Toggle("Auto Tier Up", function(state)
-    Toggles.TierUp = state
-    if state then RunLoop("TierUp", ReplicatedStorage.Area2.TierUp, 1) end
-end)
-
--- Area 3 Tab
-local BlocksFolder = Area3Tab.Folder("Blocks", "Area 3 block farming")
-
-BlocksFolder.Toggle("Auto Blocks", function(state)
-    Toggles.Blocks = state
-    if state then RunLoop("Blocks", ReplicatedStorage.Area3.BlocksGain) end
-end)
-
-local TitlesFolder = TitlesTab.Folder("Titles", "Set your title")
-
+TitlesTab:CreateSection("Titles")
 local SelectedTitle = "VIP"
+TitlesTab:CreateDropdown({
+   Name = "Select Title",
+   Options = {"VIP", "MEMBER", "SUPPORTER", "RICH PLAYER", "CRAZY SPENDER", "WHALE", "POCKET CHANGE", "MILLIONAIRE", "TRILLIONAIRE", "SEPTILLIONAIRE", "DECILLIONAIRE", "TREDECILLIONAIRE", "NOVICE", "EXPERIENCED", "MASTER", "GRINDER", "HOURS", "DAYS", "WEEKS", "TESTER", "ADMIN", "DEVELOPER", "OWNER"},
+   CurrentOption = {"VIP"},
+   MultipleOptions = false,
+   Flag = "SelectedTitle",
+   Callback = function(Options)
+      SelectedTitle = Options[1]
+   end,
+})
+TitlesTab:CreateButton({
+   Name = "Apply Title",
+   Callback = function()
+      ReplicatedStorage.UpdateTitle:FireServer(SelectedTitle)
+   end,
+})
 
-TitlesFolder.Dropdown("Select Title", {"VIP", "MEMBER", "SUPPORTER", "RICH PLAYER", "CRAZY SPENDER", "WHALE", "POCKET CHANGE", "MILLIONAIRE", "TRILLIONAIRE", "SEPTILLIONAIRE", "DECILLIONAIRE", "TREDECILLIONAIRE", "NOVICE", "EXPERIENCED", "MASTER", "GRINDER", "HOURS", "DAYS", "WEEKS", "TESTER", "ADMIN", "DEVELOPER", "OWNER"}, function(val)
-    SelectedTitle = val
-end)
-
-TitlesFolder.Button("Apply Title", "Set", function()
-    ReplicatedStorage.UpdateTitle:FireServer(SelectedTitle)
-end)
-
-local SettingsFolder = SettingsTab.Folder("Settings", "General settings")
-
-SettingsFolder.Button("Destroy GUI", "Bye", function()
-    for key in pairs(Toggles) do
-        Toggles[key] = false
-    end
-    Window:Toggle(false)
-end)
-
-game:GetService("UserInputService").InputBegan:Connect(function(Input)
-    if Input.KeyCode == Enum.KeyCode.F then
-        Window:Toggle()
-    end
-end)
+SettingsTab:CreateSection("Settings")
+SettingsTab:CreateButton({
+   Name = "Destroy GUI",
+   Callback = function()
+      for key in pairs(Toggles) do
+         Toggles[key] = false
+      end
+      Rayfield:Destroy()
+   end,
+})
