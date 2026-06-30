@@ -10,7 +10,7 @@ local Window = Rayfield:CreateWindow({
       FolderName = "Noctura",
       FileName = "MoneyIncrementalConfig"
    },
-   Theme = "AmberGlow"
+   Theme = "Amethyst"
 })
 
 getgenv().AutoClickMoney = false
