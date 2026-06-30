@@ -1,16 +1,31 @@
-getgenv().RAYFIELD_ASSET_ID = 120960636838063
+--[[
+    _   __           __                  
+   / | / /___  _____/ /___  ___________ _
+  /  |/ / __ \/ ___/ __/ / / / ___/ __ `/
+ / /|  / /_/ / /__/ /_/ /_/ / /  / /_/ / 
+/_/ |_/\____/\___/\__/\__,_/_/   \__,_(_)
+
+
+-- Noctura. Enhance a game. Your way <3
+
+]]
+
+getgenv().RAYFIELD_ASSET_ID = 120960636838063 
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Noctura | MM2 V6.6",
-   LoadingTitle = "Noctura",
-   LoadingSubtitle = "by Noctura",
-   ConfigurationSaving = {
-      Enabled = false,
-      FolderName = "Noctura",
-      FileName = "MM2Config"
-   },
-   Theme = "Amethyst"
+    Name = "Noctura",
+    Icon = "moon",
+    LoadingTitle = "Noctura | Loading",
+    LoadingSubtitle = "hi mane",
+    Theme = "Amethyst",
+    DisableRayfieldPrompts = true,
+    Discord = {
+        Enabled = true,
+        Invite = "bnmQTFs7QV",
+        RememberJoins = true
+    },
 })
 
 local Players = game:GetService("Players")
