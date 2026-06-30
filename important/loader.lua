@@ -1,4 +1,6 @@
-local Mercury = loadstring(game:HttpGet("https://raw.githubusercontent.com/deeeity/mercury-lib/master/src.lua"))()
+getgenv().RAYFIELD_ASSET_ID = 120960636838063
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
 local HttpService = game:GetService("HttpService")
 
 local currentPlaceId = game.PlaceId
@@ -15,7 +17,6 @@ local function generateRandomUsername()
     return result
 end
 
-
 local function anonymizePlayer()
     local player = game.Players.LocalPlayer
     if player then
@@ -24,17 +25,16 @@ local function anonymizePlayer()
         player.Name = newName
         isAnonymized = true
         print("Anonymized as: " .. newName)
+        Rayfield:Notify({Title = "Anonymized", Content = "Username spoofed to: " .. newName, Duration = 3})
     end
 end
-
 
 local function destroyGUI()
     if GUI then
-        GUI:Destroy()
+        Rayfield:Destroy()
         GUI = nil
     end
 end
-
 
 local success, result = pcall(function()
     local response = game:HttpGet("https://raw.githubusercontent.com/Nocturra/Noctura/refs/heads/main/important/scripts.json")
@@ -48,13 +48,11 @@ end
 
 local scripts = result
 
-
 print("Current Place ID: " .. tostring(currentPlaceId))
 print("Available scripts:")
 for _, script in ipairs(scripts.scripts) do
     print("  - " .. script.name .. " (ID: " .. tostring(script.gameId) .. ")")
 end
-
 
 for _, script in ipairs(scripts.scripts) do
     if tonumber(script.gameId) == currentPlaceId then
@@ -64,82 +62,75 @@ for _, script in ipairs(scripts.scripts) do
     end
 end
 
-
 if matchingScript then
-    GUI = Mercury:Create{
+    GUI = Rayfield:CreateWindow({
         Name = "Noctura | Happy 5 Games Supported! 💕",
-        Size = UDim2.fromOffset(500, 300),
-        Theme = Mercury.Themes.Dark,
-        Link = "https://github.com/Nocturra/Noctura"
-    }
-    
-    local Tab = GUI:Tab{
-        Name = "Home",
-        Icon = "rbxassetid://8569322835"
-    }
-    
-    Tab:Button{
-        Name = "Load",
-        Description = "Welcome to Noctura. Would you like to load " .. matchingScript.name .. "?",
+        LoadingTitle = "Noctura",
+        LoadingSubtitle = "Loading...",
+        ConfigurationSaving = {
+            Enabled = false,
+            FolderName = "Noctura",
+            FileName = "LoaderConfig"
+        },
+        Theme = "AmberGlow"
+    })
+
+    local Tab = GUI:CreateTab("Home")
+    local SettingsTab = GUI:CreateTab("Settings")
+
+    Tab:CreateButton({
+        Name = "Load " .. matchingScript.name,
         Callback = function()
             loadstring(matchingScript.script)()
-        end
-    }
-    
-    local SettingsTab = GUI:Tab{
-        Name = "Settings",
-        Icon = "rbxassetid://8569321952"
-    }
-    
-    SettingsTab:Toggle{
+            Rayfield:Notify({Title = "Loaded", Content = "Successfully loaded " .. matchingScript.name, Duration = 3})
+        end,
+    })
+
+    SettingsTab:CreateToggle({
         Name = "Anonymize",
-        StartingState = false,
-        Description = "Spoof your username and profile picture",
-        Callback = function(state)
-            if state then
+        CurrentValue = false,
+        Flag = "Anonymize",
+        Callback = function(Value)
+            if Value then
                 anonymizePlayer()
             end
-        end
-    }
-    
-    SettingsTab:Button{
+        end,
+    })
+
+    SettingsTab:CreateButton({
         Name = "Close",
-        Description = "Destroy the GUI",
         Callback = function()
             destroyGUI()
-        end
-    }
+        end,
+    })
 else
-    GUI = Mercury:Create{
+    GUI = Rayfield:CreateWindow({
         Name = "Noctura",
-        Size = UDim2.fromOffset(500, 300),
-        Theme = Mercury.Themes.Dark,
-        Link = "https://github.com/Nocturra/Noctura"
-    }
-    
-    local Tab = GUI:Tab{
-        Name = "Home",
-        Icon = "rbxassetid://8569322835"
-    }
-    
-    Tab:Button{
+        LoadingTitle = "Noctura",
+        LoadingSubtitle = "Universal Loader",
+        ConfigurationSaving = {
+            Enabled = false,
+            FolderName = "Noctura",
+            FileName = "LoaderConfig"
+        },
+        Theme = "AmberGlow"
+    })
+
+    local Tab = GUI:CreateTab("Home")
+    local SettingsTab = GUI:CreateTab("Settings")
+
+    Tab:CreateButton({
         Name = "Load Universal",
-        Description = "This game isn't supported :( Use Universal!",
         Callback = function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/Nocturra/Noctura/refs/heads/main/scripts/uni/script.lua"))()
-        end
-    }
-    
-    local SettingsTab = GUI:Tab{
-        Name = "Settings",
-        Icon = "rbxassetid://8569321952"
-    }
-    
-    SettingsTab:Button{
+            Rayfield:Notify({Title = "Loaded", Content = "Loaded Universal Script", Duration = 3})
+        end,
+    })
+
+    SettingsTab:CreateButton({
         Name = "Close",
-        Description = "Destroy the GUI",
         Callback = function()
             destroyGUI()
-        end
-    }
+        end,
+    })
 end
