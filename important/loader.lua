@@ -1,5 +1,19 @@
-getgenv().RAYFIELD_ASSET_ID = 120960636838063
+--[[
+    _   __           __                  
+   / | / /___  _____/ /___  ___________ _
+  /  |/ / __ \/ ___/ __/ / / / ___/ __ `/
+ / /|  / /_/ / /__/ /_/ /_/ / /  / /_/ / 
+/_/ |_/\____/\___/\__/\__,_/_/   \__,_(_)
+
+
+-- Noctura. Enhance a game. Your way <3
+
+]]
+
+getgenv().RAYFIELD_ASSET_ID = 120960636838063 
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
 
 local HttpService = game:GetService("HttpService")
 
@@ -64,16 +78,18 @@ end
 
 if matchingScript then
     GUI = Rayfield:CreateWindow({
-        Name = "Noctura | Happy 5 Games Supported! 💕",
-        LoadingTitle = "Noctura",
-        LoadingSubtitle = "Loading...",
-        ConfigurationSaving = {
-            Enabled = false,
-            FolderName = "Noctura",
-            FileName = "LoaderConfig"
-        },
-        Theme = "Amethyst"
-    })
+    Name = "Noctura",
+    Icon = "moon",
+    LoadingTitle = "Noctura | Loading",
+    LoadingSubtitle = "hi mane",
+    Theme = "Amethyst",
+    DisableRayfieldPrompts = true,
+    Discord = {
+        Enabled = true,
+        Invite = "bnmQTFs7QV",
+        RememberJoins = true
+    },
+})
 
     local Tab = GUI:CreateTab("Home")
     local SettingsTab = GUI:CreateTab("Settings")
@@ -105,16 +121,18 @@ if matchingScript then
     })
 else
     GUI = Rayfield:CreateWindow({
-        Name = "Noctura",
-        LoadingTitle = "Noctura",
-        LoadingSubtitle = "Universal Loader",
-        ConfigurationSaving = {
-            Enabled = false,
-            FolderName = "Noctura",
-            FileName = "LoaderConfig"
-        },
-        Theme = "AmberGlow"
-    })
+    Name = "Noctura",
+    Icon = "moon",
+    LoadingTitle = "Noctura | Loading",
+    LoadingSubtitle = "hi mane",
+    Theme = "Amethyst",
+    DisableRayfieldPrompts = true,
+    Discord = {
+        Enabled = true,
+        Invite = "bnmQTFs7QV",
+        RememberJoins = true
+    },
+})
 
     local Tab = GUI:CreateTab("Home")
     local SettingsTab = GUI:CreateTab("Settings")
